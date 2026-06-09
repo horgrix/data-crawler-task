@@ -5,6 +5,7 @@ Steam 热榜爬虫基类
 """
 
 import re
+import time
 from abc import ABC, abstractmethod
 from typing import Optional, List, Any
 
@@ -175,11 +176,9 @@ class SteamHotlistCrawler(ABC):
                 logger.warning("页面加载失败，返回空数据")
                 return []
 
-            # 反复点击"显示更多"，直到按钮消失或数据不再增长（最多尝试10次防止死循环）
-            for i in range(10):
-                if not self._click_show_more():
-                    logger.info("'显示更多'按钮已不可用，数据已全部加载")
-                    break
+            # 点击"显示更多" 等待渲染
+            self._click_show_more()
+            time.sleep(5)
 
             html = self._driver.page_source
 

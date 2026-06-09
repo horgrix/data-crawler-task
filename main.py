@@ -67,7 +67,6 @@ def crawling_xd_steam_rt_hot_list():
             region_name = STEAM_CRAWLER_REGIONS[region_code]
             logger.info(f"正在抓取地区 {region_code}({region_name}) 的实时热销榜...")
             XdGameSteamRTHotListTask(region_code, list(XD_STEAM_GAMES.keys())).execute()
-            time.sleep(5)
         logger.info("定时任务[实时热销榜]执行完毕!")
     except Exception as e:
         logger.error(f"定时任务[实时热销榜]执行失败! {e}")
@@ -114,7 +113,6 @@ def crawling_xd_steam_weekly_hot_list():
             region_name = STEAM_CRAWLER_REGIONS[region_code]
             logger.info(f"正在抓取地区 {region_code}({region_name}) 的周热销榜...")
             XdGameSteamWeeklyHotListTask(region_code, date, list(XD_STEAM_GAMES.keys())).execute()
-            time.sleep(5)
         logger.info("定时任务[周热销榜]执行完毕!")
     except Exception as e:
         logger.error(f"定时任务[周热销榜]执行失败! {e}")
