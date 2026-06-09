@@ -138,20 +138,31 @@ class SteamHotlistCrawler(ABC):
             return None
 
     def _click_show_more(self, timeout: int = None) -> bool:
-        """点击"显示更多"按钮以展开完整榜单"""
+        """点击"显示更多"按钮以展开完整榜单，并等待 Ajax 数据加载完成"""
         try:
             btn = self._wait_for_element_clickable(By.CSS_SELECTOR, self.SHOW_MORE_CSS, timeout)
+            if timeout is None:
+                timeout = self.DEFAULT_WAIT_TIMEOUT
+
+            # 记录点击前的行数
+            pre_rows = len(self._driver.find_elements(By.CSS_SELECTOR, f"table.{self.TABLE_CLASS} tbody tr"))
             btn.click()
-            logger.info("已点击'显示更多'按钮")
+            logger.info("已点击'显示更多'按钮，等待数据加载...")
+
+            # 等待 tbody 中 tr 行数增多，说明 Ajax 已渲染新数据
+            WebDriverWait(self._driver, timeout).until(
+                lambda d: len(d.find_elements(By.CSS_SELECTOR, f"table.{self.TABLE_CLASS} tbody tr")) > pre_rows
+            )
+            logger.info("显示更多数据加载完成")
             return True
         except Exception as e:
-            logger.warning(f"点击按钮失败: {e}")
+            logger.warning(f"点击按钮或等待数据加载失败: {e}")
             return False
 
     # ---------- 模板方法 ----------
     def fetch_data(self) -> List[Any]:
         """
-        模板方法：获取URL → 加载页面 → 点击"显示更多" → 解析数据。
+        模板方法：获取URL → 加载页面 → 反复点击"显示更多"直到加载全部数据 → 解析数据。
 
         Returns:
             解析后的数据列表，每条记录包含6列数据
@@ -164,7 +175,12 @@ class SteamHotlistCrawler(ABC):
                 logger.warning("页面加载失败，返回空数据")
                 return []
 
-            self._click_show_more()
+            # 反复点击"显示更多"，直到按钮消失或数据不再增长（最多尝试10次防止死循环）
+            for i in range(10):
+                if not self._click_show_more():
+                    logger.info("'显示更多'按钮已不可用，数据已全部加载")
+                    break
+
             html = self._driver.page_source
 
             data = self._parse_table(html)
