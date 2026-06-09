@@ -122,6 +122,7 @@ class SteamHotlistCrawler(ABC):
         WebDriverWait(self._driver, timeout).until(
             EC.presence_of_element_located((by, value))
         )
+        time.sleep(5)
 
     def _wait_for_element_clickable(self, by: By, value: str, timeout: int = None):
         """等待页面上指定元素可点击"""
