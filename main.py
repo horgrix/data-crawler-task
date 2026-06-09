@@ -251,8 +251,8 @@ scheduler.add_job(
 # ============================================================
 # 启动
 # ============================================================
-# scheduler.start()
-# logger.info("调度器已启动 (时区: UTC)，任务信息已持久化到 MySQL")
+scheduler.start()
+logger.info("调度器已启动 (时区: UTC)，任务信息已持久化到 MySQL")
 
 try:
     while True:
