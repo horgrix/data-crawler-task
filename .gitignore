@@ -1,0 +1,25 @@
+# Python virtual environment
+.venv/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment configuration (contains secrets)
+xd.env
+
+# Log files
+log/
+*.log
+
+# Binary / driver
+chromedriver.exe
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
