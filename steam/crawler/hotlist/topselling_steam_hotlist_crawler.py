@@ -21,6 +21,9 @@ class TopsellingSteamHotlistCrawler(SteamHotlistCrawler):
 
     def _get_url(self) -> str:
         return f"https://store.steampowered.com/charts/topselling/{self._region}"
+    
+    def _is_need_showmore(self) -> int:
+        return 0
 
     def _parse_col3(self, cell) -> Any:
         return None

@@ -13,6 +13,9 @@ class MostplayerSteamHotlistCrawler(SteamHotlistCrawler):
 
     def _get_url(self) -> str:
         return "https://store.steampowered.com/charts/mostplayed"
+    
+    def _is_need_showmore(self) -> int:
+        return 0
 
     def _parse_col3(self, cell) -> Any:
         return None

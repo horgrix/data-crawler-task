@@ -36,6 +36,11 @@ class SteamHotlistCrawler(ABC):
         pass
 
     @abstractmethod
+    def _is_need_showmore(self) -> int:
+        """子类提供的爬虫目标地址"""
+        pass
+
+    @abstractmethod
     def _parse_col3(self, cell) -> Any:
         """解析第3列"""
         pass
@@ -177,8 +182,9 @@ class SteamHotlistCrawler(ABC):
                 return []
 
             # 点击"显示更多" 等待渲染
-            self._click_show_more()
-            time.sleep(5)
+            if self._is_need_showmore() == 1:
+                self._click_show_more()
+                time.sleep(5)
 
             html = self._driver.page_source
 

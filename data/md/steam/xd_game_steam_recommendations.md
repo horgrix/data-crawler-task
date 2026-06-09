@@ -1,14 +1,14 @@
 # 模块描述
-这是一个基于Python数据操作程序，负责 xd_game_steam_commendations 的 CURD
+这是一个基于Python数据操作程序，负责 xd_game_steam_recommendations 的 CURD
 
 # 模块依赖
 数据库连接可以从db/xd_db_cfg.py中获取 
 
 # 代码实现
-data/xd/recommendations/xd_game_steam_commendations_dao.py 它继承 data/xd/xd_game_steam_dao.py 的 XdGameSteamDao
+data/xd/recommendations/xd_game_steam_recommendations_dao.py 它继承 data/xd/xd_game_steam_dao.py 的 XdGameSteamDao
 
 # MySQL表
-xd_game_steam_commendations
+xd_game_steam_recommendations
 字段如下：
 stat_ts bigint 统计时间
 steam_id int SteamID
