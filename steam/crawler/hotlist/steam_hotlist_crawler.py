@@ -185,8 +185,7 @@ class SteamHotlistCrawler(ABC):
             if self._is_need_showmore() == 1:
                 self._click_show_more()
                 time.sleep(5)
-
-            html = self._driver.page_source
+                html = self._driver.page_source
 
             data = self._parse_table(html)
             logger.info(f"数据解析完成，共 {len(data)} 条记录")

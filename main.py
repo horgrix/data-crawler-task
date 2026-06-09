@@ -63,7 +63,7 @@ def crawling_xd_steam_rt_hot_list():
     """每个小时第2分钟执行一次"""
     try:
         logger.info("定时任务[实时热销榜]执行中...")
-        for region_code in STEAM_CRAWLER_REGIONS:
+        for region_code in ('global', 'CN', 'JP', 'KR', 'TH'):
             region_name = STEAM_CRAWLER_REGIONS[region_code]
             logger.info(f"正在抓取地区 {region_code}({region_name}) 的实时热销榜...")
             XdGameSteamRTHotListTask(region_code, list(XD_STEAM_GAMES.keys())).execute()
