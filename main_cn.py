@@ -215,58 +215,58 @@ scheduler = BackgroundScheduler(
 
 # ---- 注册定时任务 ----
 # 实时热销榜：每小时第2分钟
-scheduler.add_job(
-    crawling_xd_steam_rt_hot_list,
-    trigger=CronTrigger(minute=2),
-    id='xd_steam_rt_hot_list',
-    replace_existing=True,
-    name='每小时第2分钟 抓取Steam实时热销榜',
-)
+# scheduler.add_job(
+#     crawling_xd_steam_rt_hot_list,
+#     trigger=CronTrigger(minute=2),
+#     id='xd_steam_rt_hot_list',
+#     replace_existing=True,
+#     name='每小时第2分钟 抓取Steam实时热销榜',
+# )
 
 # 实时热玩榜：每小时第4分钟
-scheduler.add_job(
-    crawling_xd_steam_rt_players_list,
-    trigger=CronTrigger(minute=4),
-    id='xd_steam_rt_players_list',
-    replace_existing=True,
-    name='每小时第4分钟 抓取Steam实时热玩榜',
-)
+# scheduler.add_job(
+#     crawling_xd_steam_rt_players_list,
+#     trigger=CronTrigger(minute=4),
+#     id='xd_steam_rt_players_list',
+#     replace_existing=True,
+#     name='每小时第4分钟 抓取Steam实时热玩榜',
+# )
 
 # 周热销榜：每周3 8点
-scheduler.add_job(
-    crawling_xd_steam_weekly_hot_list,
-    trigger=CronTrigger(day_of_week='wed', hour=8, minute=0),
-    id='xd_steam_weekly_hot_list',
-    replace_existing=True,
-    name='每周3 8点 抓取Steam周热销榜',
-)
+# scheduler.add_job(
+#     crawling_xd_steam_weekly_hot_list,
+#     trigger=CronTrigger(day_of_week='wed', hour=8, minute=0),
+#     id='xd_steam_weekly_hot_list',
+#     replace_existing=True,
+#     name='每周3 8点 抓取Steam周热销榜',
+# )
 
 # 玩家数据增量：每小时第6分钟
-scheduler.add_job(
-    crawling_xd_steam_players_increment,
-    trigger=CronTrigger(minute=6),
-    id='xd_steam_players_increment',
-    replace_existing=True,
-    name='每小时第6分钟 抓取Steam玩家数据(增量)',
-)
+# scheduler.add_job(
+#     crawling_xd_steam_players_increment,
+#     trigger=CronTrigger(minute=6),
+#     id='xd_steam_players_increment',
+#     replace_existing=True,
+#     name='每小时第6分钟 抓取Steam玩家数据(增量)',
+# )
 
 # 玩家数据全量：每个月第3天 4点
-scheduler.add_job(
-    crawling_xd_steam_players_full,
-    trigger=CronTrigger(day=3, hour=4, minute=0),
-    id='xd_steam_players_full',
-    replace_existing=True,
-    name='每月第3天4点 抓取Steam玩家数据(全量)',
-)
+# scheduler.add_job(
+#     crawling_xd_steam_players_full,
+#     trigger=CronTrigger(day=3, hour=4, minute=0),
+#     id='xd_steam_players_full',
+#     replace_existing=True,
+#     name='每月第3天4点 抓取Steam玩家数据(全量)',
+# )
 
 # 评价数据：每天 2点
-scheduler.add_job(
-    crawling_xd_steam_recommendations,
-    trigger=CronTrigger(hour=2, minute=0),
-    id='xd_steam_recommendations',
-    replace_existing=True,
-    name='每天2点 抓取Steam评价数据',
-)
+# scheduler.add_job(
+#     crawling_xd_steam_recommendations,
+#     trigger=CronTrigger(hour=2, minute=0),
+#     id='xd_steam_recommendations',
+#     replace_existing=True,
+#     name='每天2点 抓取Steam评价数据',
+# )
 
 # TapTap游戏信息采集：每小时第15分
 scheduler.add_job(
@@ -280,19 +280,19 @@ scheduler.add_job(
 # ============================================================
 # 启动
 # ============================================================
-# scheduler.start()
-# logger.info("调度器已启动 (时区: UTC)，任务信息已持久化到 MySQL")
+scheduler.start()
+logger.info("调度器已启动 (时区: UTC)，任务信息已持久化到 MySQL")
 
-# try:
-#     while True:
-#         time.sleep(60)
-# except KeyboardInterrupt:
-#     logger.info("收到终止信号，正在关闭调度器...")
-#     scheduler.shutdown()
+try:
+    while True:
+        time.sleep(60)
+except KeyboardInterrupt:
+    logger.info("收到终止信号，正在关闭调度器...")
+    scheduler.shutdown()
 
 #crawling_xd_steam_players_full()
 #crawling_xd_steam_weekly_hot_list()
 #crawling_xd_steam_rt_hot_list()
 # crawling_xd_steam_rt_players_list()
 #crawling_xd_steam_recommendations()
-crawling_taptap_game_info()
+# crawling_taptap_game_info()
