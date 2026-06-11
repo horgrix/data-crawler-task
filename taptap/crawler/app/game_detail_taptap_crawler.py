@@ -124,6 +124,7 @@ class GameDetailTaptapCrawler:
                 return json.loads(data.text)
         except Exception as e:
             logger.error(f"API 请求失败，app_id={self._app_id}，错误: {e}")
+            logger.error(f"API 请求失败，app_id={self._app_id}，data: {data}")
             return None
         finally:
             self._quit_driver()
