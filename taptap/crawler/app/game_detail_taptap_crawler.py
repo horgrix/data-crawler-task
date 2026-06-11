@@ -6,7 +6,12 @@ TapTap 游戏详情爬虫
 
 import sys
 import os
+import time
+import json
 from typing import Any, Dict, List, Optional, Tuple
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from bs4 import BeautifulSoup
 
 import requests
 
@@ -24,7 +29,6 @@ class GameDetailTaptapCrawler:
         "https://www.taptap.cn/webapiv2/sidebar/v1/list"
         "?X-UA=V%3D1%26PN%3DWebApp%26LANG%3Dzh_CN%26VN_CODE%3D102"
         "%26LOC%3DCN%26PLT%3DPC%26DS%3DPC"
-        "%26UID%3D3984d25f-315d-4e3e-8f7c-df617ec49dc5"
         "%26OS%3DWindows%26OSV%3D10%26DT%3DPC"
         "&type=app_detail&app_id="
     )
@@ -48,6 +52,29 @@ class GameDetailTaptapCrawler:
         self._app_id = app_id
         self._url = self.BASE_URL + str(app_id)
 
+    # ---------- WebDriver 管理 ----------
+    def _init_driver(self) -> webdriver.Chrome:
+        """初始化 Chrome 无头浏览器"""
+        chrome_options = Options()
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--disable-dev-shm-usage')
+        chrome_options.add_argument('--window-size=1920,1080')
+        chrome_options.add_argument(
+            'user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+            'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        )
+        return webdriver.Chrome(options=chrome_options)
+
+    def _quit_driver(self):
+        """安全关闭 WebDriver"""
+        if self._driver:
+            try:
+                self._driver.quit()
+            except Exception:
+                pass
+            self._driver = None
+
     # ---------- 数据获取 ----------
     def _request_api(self) -> Optional[Dict[str, Any]]:
         """
@@ -69,6 +96,37 @@ class GameDetailTaptapCrawler:
         except ValueError as e:
             logger.error(f"JSON 解析失败，app_id={self._app_id}，错误: {e}")
             return None
+        
+    def _load_page(self, url: str, timeout: int = None) -> Optional[str]:
+        """加载页面，等待表格出现后返回页面源码"""
+        logger.info(f"正在加载页面: {url}")
+        self._driver.get(url)
+        try:
+            time.sleep(5)
+            logger.info("页面加载完成")
+            return self._driver.page_source
+        except Exception as e:
+            logger.error(f"页面加载失败: {e}")
+            return None
+        
+    def _request_api_by_brower(self) -> Optional[Dict[str, Any]]:
+        self._driver = self._init_driver()
+        try:
+            html = self._load_page(self._url)
+            if not html:
+                logger.warning("页面加载失败，返回空数据")
+                return []
+
+            soup = BeautifulSoup(html, 'html.parser')
+            data = soup.find('html')
+            if data != None:
+                logger.info(f"API 请求成功，app_id={self._app_id}")
+                return json.loads(data.text)
+        except Exception as e:
+            logger.error(f"API 请求失败，app_id={self._app_id}，错误: {e}")
+            return None
+        finally:
+            self._quit_driver()
 
     # ---------- 数据解析 ----------
     def _parse_response(self, json_data: Dict[str, Any]) -> List[Tuple]:
@@ -104,11 +162,11 @@ class GameDetailTaptapCrawler:
         # 取第一个元素，验证 label
         first_item = sidebar_list[0]
         label = first_item.get("label", "")
-        if label != "厂商":
-            logger.warning(
-                f'第一个元素 label 不是"厂商"，实际为: {label}，app_id={self._app_id}'
-            )
-            return []
+        # if label != "厂商":
+        #     logger.warning(
+        #         f'第一个元素 label 不是"厂商"，实际为: {label}，app_id={self._app_id}'
+        #     )
+        #     return []
 
         # 进入内部 data 对象
         inner_data: Dict[str, Any] = first_item.get("data", {})
@@ -196,7 +254,7 @@ class GameDetailTaptapCrawler:
         """
         logger.info(f"========== 开始爬取 TapTap 游戏数据，app_id={self._app_id} ==========")
 
-        json_data = self._request_api()
+        json_data = self._request_api_by_brower()
         if json_data is None:
             logger.warning("API 请求失败，返回空数据")
             return []

@@ -269,30 +269,30 @@ scheduler.add_job(
 )
 
 # TapTap游戏信息采集：每小时第15分
-scheduler.add_job(
-    crawling_taptap_game_info,
-    trigger=CronTrigger(minute=15),
-    id='taptap_game_info',
-    replace_existing=True,
-    name='每小时第15分 抓取TapTap游戏信息',
-)
+# scheduler.add_job(
+#     crawling_taptap_game_info,
+#     trigger=CronTrigger(minute=15),
+#     id='taptap_game_info',
+#     replace_existing=True,
+#     name='每小时第15分 抓取TapTap游戏信息',
+# )
 
 # ============================================================
 # 启动
 # ============================================================
-# scheduler.start()
-# logger.info("调度器已启动 (时区: UTC)，任务信息已持久化到 MySQL")
+scheduler.start()
+logger.info("调度器已启动 (时区: UTC)，任务信息已持久化到 MySQL")
 
-# try:
-#     while True:
-#         time.sleep(60)
-# except KeyboardInterrupt:
-#     logger.info("收到终止信号，正在关闭调度器...")
-#     scheduler.shutdown()
+try:
+    while True:
+        time.sleep(60)
+except KeyboardInterrupt:
+    logger.info("收到终止信号，正在关闭调度器...")
+    scheduler.shutdown()
 
 #crawling_xd_steam_players_full()
 #crawling_xd_steam_weekly_hot_list()
 #crawling_xd_steam_rt_hot_list()
 # crawling_xd_steam_rt_players_list()
 #crawling_xd_steam_recommendations()
-crawling_taptap_game_info()
+# crawling_taptap_game_info()
