@@ -280,15 +280,15 @@ scheduler.add_job(
 # ============================================================
 # 启动
 # ============================================================
-# scheduler.start()
-# logger.info("调度器已启动 (时区: UTC)，任务信息已持久化到 MySQL")
+scheduler.start()
+logger.info("调度器已启动 (时区: UTC)，任务信息已持久化到 MySQL")
 
-# try:
-#     while True:
-#         time.sleep(60)
-# except KeyboardInterrupt:
-#     logger.info("收到终止信号，正在关闭调度器...")
-#     scheduler.shutdown()
+try:
+    while True:
+        time.sleep(60)
+except KeyboardInterrupt:
+    logger.info("收到终止信号，正在关闭调度器...")
+    scheduler.shutdown()
 
 #crawling_xd_steam_players_full()
 #crawling_xd_steam_weekly_hot_list()
