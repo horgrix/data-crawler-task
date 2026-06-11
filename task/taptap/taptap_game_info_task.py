@@ -61,7 +61,7 @@ class TapTapGameInfoTask(XdBaseTask):
               latest_version_score, latest_version_review_count), ...]
         """
         logger.info("开始处理和清洗 TapTap 游戏数据...")
-        now_ms = int(datetime.now(timezone.utc).timestamp() * 1000)
+        now_ms = int(datetime.now(timezone.utc).timestamp()) // 3600 * 3600  * 1000
         result = []
         for row in records:
             # row 结构: (app_id, title, hits_total, pc_download_count, review_count,
@@ -87,5 +87,3 @@ class TapTapGameInfoTask(XdBaseTask):
         dao = GameDetailTaptapDao()
         affected = dao.save_or_update(records)
         logger.info(f"成功存入 {affected} 条数据！")
-
-TapTapGameInfoTask(45213).execute()

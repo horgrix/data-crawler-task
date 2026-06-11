@@ -57,3 +57,13 @@ task/xd/xd_game_steam_players_task.py XdGameSteamPlayersTask
 task/xd/xd_game_steam_recommendation_task.py XdGameSteamRecommendationsTask
 ### 定时配置
 每天 2点 执行一次
+
+## TapTap 游戏信息采集
+### 模块依赖
+task/taptap/taptap_game_info_task.py TapTapGameInfoTask
+data/taptap/app/game_list_taptap_dao.py GameListTaptapDao
+### 业务逻辑
+从GameListTaptapDao查询出game列表,然后遍历游戏列表
+从TapTapGameInfoTask抓取信息
+### 定时配置
+每小时第15分执行一次
