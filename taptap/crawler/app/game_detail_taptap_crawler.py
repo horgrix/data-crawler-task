@@ -24,6 +24,8 @@ from logger.xd_logger_cfg import logger
 class GameDetailTaptapCrawler:
     """TapTap 游戏详情爬虫，通过 sidebar/v1/list 接口获取游戏数据"""
 
+    BASE_TAPTAP_URL = "https://www.taptap.cn/app/"
+
     # TapTap API 基础 URL（X-UA 参数为固定值）
     BASE_URL = (
         "https://www.taptap.cn/webapiv2/sidebar/v1/list"
@@ -51,18 +53,22 @@ class GameDetailTaptapCrawler:
         """
         self._app_id = app_id
         self._url = self.BASE_URL + str(app_id)
+        self._taptap_url = self.BASE_TAPTAP_URL + str(app_id)
 
     # ---------- WebDriver 管理 ----------
     def _init_driver(self) -> webdriver.Chrome:
         """初始化 Chrome 无头浏览器"""
         chrome_options = Options()
+        chrome_options.add_argument('--disable-blink-features=AutomationControlled')
+        chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
+        chrome_options.add_experimental_option('useAutomationExtension', False)
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-dev-shm-usage')
         chrome_options.add_argument('--window-size=1920,1080')
         chrome_options.add_argument(
             'user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-            'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.7827.55 Safari/537.36'
         )
         return webdriver.Chrome(options=chrome_options)
 
@@ -99,12 +105,27 @@ class GameDetailTaptapCrawler:
         
     def _load_page(self, url: str, timeout: int = None) -> Optional[str]:
         """加载页面，等待表格出现后返回页面源码"""
-        logger.info(f"正在加载页面: {url}")
-        self._driver.get(url)
+
+        logger.info(f"正在加载页面: {self._taptap_url}")
+        self._driver.get(self._taptap_url)
         try:
             time.sleep(5)
             logger.info("页面加载完成")
-            return self._driver.page_source
+
+            js_code = f"""
+            return fetch("{url}", {{
+                method: "GET",
+                headers: {{
+                    "User-Agent": navigator.userAgent,
+                    "Accept": "application/json, text/plain, */*",
+                }}
+            }})
+            .then(response => response.json())
+            .then(data => {{ return data; }})
+            .catch(error => {{ return {{error: error.toString()}}; }});
+            """
+            result = self._driver.execute_script(js_code)
+            return result
         except Exception as e:
             logger.error(f"页面加载失败: {e}")
             return None
@@ -117,11 +138,12 @@ class GameDetailTaptapCrawler:
                 logger.warning("页面加载失败，返回空数据")
                 return []
 
-            soup = BeautifulSoup(html, 'html.parser')
-            data = soup.find('html')
-            if data != None:
-                logger.info(f"API 请求成功，app_id={self._app_id}")
-                return json.loads(data.text)
+            return html
+            # soup = BeautifulSoup(html, 'html.parser')
+            # data = soup.find('html')
+            # if data != None:
+            #     logger.info(f"API 请求成功，app_id={self._app_id}")
+            #     return json.loads(data.text)
         except Exception as e:
             logger.error(f"API 请求失败，app_id={self._app_id}，错误: {e}")
             logger.error(f"API 请求失败，app_id={self._app_id}，data: {data}")
@@ -263,3 +285,5 @@ class GameDetailTaptapCrawler:
         result = self._parse_response(json_data)
         logger.info(f"========== 爬取完成，共 {len(result)} 条记录 ==========")
         return result
+    
+print(GameDetailTaptapCrawler(172664).fetch_data())
